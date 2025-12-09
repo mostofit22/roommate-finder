@@ -1,0 +1,6 @@
+flask
+gunicorn
+flask_sqlalchemy
+flask_login
+python-dotenv
+scikit-learn    # if used
