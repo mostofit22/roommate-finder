@@ -1,0 +1,106 @@
+I want you to build a complete full-stack web app for my final year project. 
+Make the code clean, beginner-friendly, well-commented, and keep the UI modern and beautiful. 
+Below are the EXACT requirements. Read everything.
+
+-----------------------------------------------------
+PROJECT: Roommate & Flat Finder Web Application
+-----------------------------------------------------
+
+TECH STACK (must follow these):
+- Backend: Python Flask
+- Frontend: HTML + TailwindCSS + Jinja Templates
+- Database: SQLite (simple for beginners)
+- Optional Machine Learning (simple): Matching score between users using basic logic (NO deep learning)
+
+-----------------------------------------------------
+FEATURES (BEGINNER-FRIENDLY VERSION)
+-----------------------------------------------------
+
+1) HOME PAGE  
+- Modern UI  
+- Hero section  
+- Buttons: “Find Roommates”, “Post a Listing”, “Login”
+
+2) USER REGISTRATION & LOGIN  
+- Simple signup  
+- User details: name, age, gender, budget, preferred locations, lifestyle preferences  
+- Store in SQLite  
+- Password hashing required (use werkzeug)
+
+3) DASHBOARD  
+- Show: My Profile, Browse Roommates, Browse Listings, Post New Listing  
+- Clean card-based UI
+
+4) POST A LISTING  
+- Fields: Location, Rent, Room Type, Description  
+- Image upload (1–2 images max)  
+- Store images in "static/uploads" folder  
+- Save details in SQLite
+
+5) BROWSE ROOMMATES  
+- Show cards with: name, budget, location preferences, lifestyle tags  
+- Search + filter (budget range, city)
+
+6) BROWSE LISTINGS  
+- Show property cards (images + rent + description)  
+- Filters: rent range, city
+
+7) SIMPLE MATCHING SYSTEM (BEGINNER-SAFE)
+- Implement a simple rule-based score:  
+  score = (location match * 5) + (budget closeness * 3) + (lifestyle match * 2)
+- Display: “Compatibility Score: 0–10”
+
+8) UI REQUIREMENTS  
+- Use TailwindCSS ONLY  
+- Make it clean, aesthetic, modern (similar to Airbnb style)  
+- Mobile responsive  
+- Use components like cards, modals, buttons, forms
+
+9) PROJECT STRUCTURE  
+Make sure Replit generates this folder structure:
+
+project/
+│ app.py
+│ requirements.txt
+│ database.db
+│
+├── static/
+│    ├── css/
+│    ├── uploads/
+│    └── js/
+│
+└── templates/
+     ├── base.html
+     ├── home.html
+     ├── login.html
+     ├── register.html
+     ├── dashboard.html
+     ├── browse_roommates.html
+     ├── browse_listings.html
+     ├── post_listing.html
+     └── profile.html
+
+
+10) CODE QUALITY  
+- Add comments  
+- Explain every function  
+- Keep routes simple  
+- Use blueprints only if needed  
+- Ensure the project can run immediately after installing dependencies
+
+11) EXTRA REQUIREMENTS  
+- Generate sample dummy data so UI looks filled  
+- Add a nice navbar and footer  
+- Add light animations (Tailwind classes only, no JS complexity)
+- Ensure no advanced ML — keep matching logic simple.
+
+-----------------------------------------------------
+DELIVERABLE
+-----------------------------------------------------
+Generate the FULL project code with all files.
+After generating, explain:
+1) how to run it in Replit  
+2) where to edit templates  
+3) how to modify matching logic  
+
+Make the UI visually impressive but code simple enough for a beginner.

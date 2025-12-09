@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+
+{% block title %}{{ listing.title }}{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    
+    <!-- Back Button -->
+    <a href="{{ url_for('browse_listings') }}" class="inline-flex items-center text-gray-600 hover:text-primary-600 mb-6">
+        <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+        </svg>
+        Back to Listings
+    </a>
+    
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+        
+        <!-- Images Section -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-1 bg-gray-100">
+            <!-- Primary Image -->
+            <div class="aspect-video md:aspect-square bg-gradient-to-br from-primary-100 to-primary-200">
+                {% if listing.image1 and listing.image1 != 'default_listing.jpg' %}
+                    <img src="{{ url_for('static', filename='uploads/' + listing.image1) }}" alt="{{ listing.title }}" class="w-full h-full object-cover">
+                {% else %}
+                    <div class="w-full h-full flex items-center justify-center">
+                        <svg class="w-24 h-24 text-primary-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                        </svg>
+                    </div>
+                {% endif %}
+            </div>
+            
+            <!-- Secondary Image -->
+            <div class="aspect-video md:aspect-square bg-gradient-to-br from-gray-100 to-gray-200">
+                {% if listing.image2 %}
+                    <img src="{{ url_for('static', filename='uploads/' + listing.image2) }}" alt="{{ listing.title }}" class="w-full h-full object-cover">
+                {% else %}
+                    <div class="w-full h-full flex items-center justify-center">
+                        <svg class="w-24 h-24 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Content Section -->
+        <div class="p-8">
+            <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6 mb-8">
+                <div>
+                    <!-- Room Type Badge -->
+                    <span class="inline-block px-3 py-1 bg-primary-100 text-primary-700 text-sm font-medium rounded-full mb-3">
+                        {{ listing.room_type }}
+                    </span>
+                    
+                    <!-- Title -->
+                    <h1 class="text-3xl font-bold text-gray-900 mb-3">{{ listing.title }}</h1>
+                    
+                    <!-- Location -->
+                    <div class="flex items-center text-gray-600">
+                        <svg class="w-5 h-5 mr-2 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        </svg>
+                        <span class="text-lg">{{ listing.location }}</span>
+                    </div>
+                </div>
+                
+                <!-- Price Card -->
+                <div class="bg-gray-50 rounded-2xl p-6 text-center lg:text-right">
+                    <div class="text-4xl font-bold text-primary-600 mb-1">
+                        &#8377;{{ "{:,}".format(listing.rent) }}
+                    </div>
+                    <div class="text-gray-500">per month</div>
+                </div>
+            </div>
+            
+            <!-- Description -->
+            <div class="mb-8">
+                <h2 class="text-xl font-bold text-gray-900 mb-4">About this place</h2>
+                <p class="text-gray-600 leading-relaxed whitespace-pre-line">
+                    {{ listing.description or 'No description provided.' }}
+                </p>
+            </div>
+            
+            <!-- Amenities -->
+            {% if listing.amenities %}
+            <div class="mb-8">
+                <h2 class="text-xl font-bold text-gray-900 mb-4">Amenities</h2>
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                    {% for amenity in listing.get_amenities_list() %}
+                    <div class="flex items-center p-3 bg-gray-50 rounded-xl">
+                        <svg class="w-5 h-5 text-green-500 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                        <span class="text-gray-700">{{ amenity }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Posted By -->
+            <div class="border-t border-gray-100 pt-8">
+                <h2 class="text-xl font-bold text-gray-900 mb-4">Posted by</h2>
+                <div class="flex items-center gap-4">
+                    <div class="w-16 h-16 rounded-xl bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white text-2xl font-bold overflow-hidden">
+                        {% if listing.owner.profile_image and listing.owner.profile_image != 'default_avatar.png' %}
+                            <img src="{{ url_for('static', filename='uploads/' + listing.owner.profile_image) }}" alt="{{ listing.owner.name }}" class="w-full h-full object-cover">
+                        {% else %}
+                            {{ listing.owner.name[0].upper() }}
+                        {% endif %}
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-900">{{ listing.owner.name }}</h3>
+                        <p class="text-gray-500">Member since {{ listing.owner.created_at.strftime('%B %Y') }}</p>
+                    </div>
+                    {% if current_user and current_user.id != listing.owner.id %}
+                    <a href="{{ url_for('view_roommate', user_id=listing.owner.id) }}" class="ml-auto px-6 py-3 bg-primary-500 text-white font-medium rounded-xl hover:bg-primary-600 transition-colors">
+                        View Profile
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
