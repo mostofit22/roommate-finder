@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+
+{% block title %}Browse Listings{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    
+    <!-- Header -->
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">Browse Listings</h1>
+        <p class="text-gray-600">Find your perfect room or flat from our available listings</p>
+    </div>
+    
+    <!-- Filters -->
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-8">
+        <form method="GET" action="{{ url_for('browse_listings') }}" class="flex flex-wrap gap-4 items-end">
+            
+            <!-- Location Filter -->
+            <div class="flex-1 min-w-[200px]">
+                <label for="location" class="block text-sm font-medium text-gray-700 mb-2">Location</label>
+                <select id="location" name="location"
+                    class="block w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors">
+                    <option value="">All Locations</option>
+                    {% for loc in locations %}
+                    <option value="{{ loc }}" {% if filters.location == loc %}selected{% endif %}>{{ loc }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <!-- Room Type Filter -->
+            <div class="flex-1 min-w-[200px]">
+                <label for="room_type" class="block text-sm font-medium text-gray-700 mb-2">Room Type</label>
+                <select id="room_type" name="room_type"
+                    class="block w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors">
+                    <option value="">All Types</option>
+                    <option value="Private Room" {% if filters.room_type == 'Private Room' %}selected{% endif %}>Private Room</option>
+                    <option value="Shared Room" {% if filters.room_type == 'Shared Room' %}selected{% endif %}>Shared Room</option>
+                    <option value="Entire Flat" {% if filters.room_type == 'Entire Flat' %}selected{% endif %}>Entire Flat</option>
+                </select>
+            </div>
+            
+            <!-- Min Rent -->
+            <div class="w-32">
+                <label for="min_rent" class="block text-sm font-medium text-gray-700 mb-2">Min Rent</label>
+                <input type="number" id="min_rent" name="min_rent" value="{{ filters.min_rent or '' }}" min="0"
+                    class="block w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                    placeholder="&#8377; Min">
+            </div>
+            
+            <!-- Max Rent -->
+            <div class="w-32">
+                <label for="max_rent" class="block text-sm font-medium text-gray-700 mb-2">Max Rent</label>
+                <input type="number" id="max_rent" name="max_rent" value="{{ filters.max_rent or '' }}" min="0"
+                    class="block w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                    placeholder="&#8377; Max">
+            </div>
+            
+            <!-- Filter Button -->
+            <button type="submit" 
+                class="px-6 py-2.5 bg-primary-500 text-white font-medium rounded-xl hover:bg-primary-600 transition-colors">
+                <span class="flex items-center">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
+                    </svg>
+                    Filter
+                </span>
+            </button>
+            
+            <!-- Clear Filters -->
+            {% if filters.location or filters.min_rent or filters.max_rent or filters.room_type %}
+            <a href="{{ url_for('browse_listings') }}" class="px-4 py-2.5 text-gray-600 hover:text-gray-800 font-medium">
+                Clear Filters
+            </a>
+            {% endif %}
+        </form>
+    </div>
+    
+    <!-- Results Count -->
+    <div class="mb-6">
+        <p class="text-gray-600">
+            Showing <span class="font-semibold text-gray-900">{{ listings|length }}</span> listing{% if listings|length != 1 %}s{% endif %}
+        </p>
+    </div>
+    
+    <!-- Listings Grid -->
+    {% if listings %}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {% for listing in listings %}
+        <a href="{{ url_for('view_listing', listing_id=listing.id) }}" class="group">
+            <div class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 card-hover border border-gray-100">
+                <!-- Image -->
+                <div class="relative h-56 bg-gradient-to-br from-primary-100 to-primary-200 overflow-hidden">
+                    {% if listing.image1 and listing.image1 != 'default_listing.jpg' %}
+                        <img src="{{ url_for('static', filename='uploads/' + listing.image1) }}" alt="{{ listing.title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                    {% else %}
+                        <div class="w-full h-full flex items-center justify-center">
+                            <svg class="w-20 h-20 text-primary-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                            </svg>
+                        </div>
+                    {% endif %}
+                    
+                    <!-- Room Type Badge -->
+                    <div class="absolute top-4 left-4">
+                        <span class="px-3 py-1.5 bg-white/90 backdrop-blur-sm text-gray-700 text-sm font-medium rounded-full shadow-sm">
+                            {{ listing.room_type }}
+                        </span>
+                    </div>
+                </div>
+                
+                <!-- Content -->
+                <div class="p-6">
+                    <h3 class="text-xl font-bold text-gray-900 group-hover:text-primary-600 transition-colors mb-2 line-clamp-1">
+                        {{ listing.title }}
+                    </h3>
+                    
+                    <div class="flex items-center text-gray-500 mb-3">
+                        <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        </svg>
+                        <span>{{ listing.location }}</span>
+                    </div>
+                    
+                    <p class="text-gray-600 text-sm line-clamp-2 mb-4">
+                        {{ listing.description[:120] }}{% if listing.description|length > 120 %}...{% endif %}
+                    </p>
+                    
+                    <!-- Amenities Preview -->
+                    {% if listing.amenities %}
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        {% for amenity in listing.get_amenities_list()[:3] %}
+                        <span class="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full">
+                            {{ amenity }}
+                        </span>
+                        {% endfor %}
+                        {% if listing.get_amenities_list()|length > 3 %}
+                        <span class="px-2 py-1 bg-gray-100 text-gray-500 text-xs rounded-full">
+                            +{{ listing.get_amenities_list()|length - 3 }} more
+                        </span>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                    
+                    <div class="flex items-center justify-between pt-4 border-t border-gray-100">
+                        <span class="text-2xl font-bold text-primary-600">
+                            &#8377;{{ "{:,}".format(listing.rent) }}
+                            <span class="text-sm font-normal text-gray-500">/month</span>
+                        </span>
+                        
+                        <span class="text-primary-600 font-medium group-hover:translate-x-1 transition-transform inline-flex items-center">
+                            View Details
+                            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                            </svg>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="bg-white rounded-2xl p-12 text-center border border-gray-100">
+        <svg class="w-20 h-20 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+        </svg>
+        <h3 class="text-xl font-semibold text-gray-700 mb-2">No Listings Found</h3>
+        <p class="text-gray-500 mb-6">Try adjusting your filters or check back later for new listings.</p>
+        <a href="{{ url_for('browse_listings') }}" class="inline-flex items-center px-6 py-3 bg-primary-500 text-white font-medium rounded-xl hover:bg-primary-600 transition-colors">
+            Clear All Filters
+        </a>
+    </div>
+    {% endif %}
+    
+</div>
+{% endblock %}

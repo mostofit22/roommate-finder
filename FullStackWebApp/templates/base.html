@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}RoomieMatch{% endblock %} | Find Your Perfect Roommate</title>
+    
+    <!-- TailwindCSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Custom Tailwind Configuration -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            200: '#bae6fd',
+                            300: '#7dd3fc',
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        },
+                        accent: {
+                            500: '#f43f5e',
+                            600: '#e11d48',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Google Fonts - Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Custom Styles -->
+    <style>
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+        }
+        
+        /* Smooth scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        /* Custom animations */
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .hover-lift {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .hover-lift:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        /* Gradient text */
+        .gradient-text {
+            background: linear-gradient(135deg, #0ea5e9 0%, #f43f5e 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        /* Card hover effect */
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        
+        .card-hover:hover {
+            transform: scale(1.02);
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gray-50 flex flex-col">
+    
+    <!-- ============================================== -->
+    <!-- NAVIGATION BAR -->
+    <!-- ============================================== -->
+    <nav class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                
+                <!-- Logo -->
+                <a href="{{ url_for('home') }}" class="flex items-center space-x-2">
+                    <div class="w-10 h-10 bg-gradient-to-br from-primary-500 to-accent-500 rounded-xl flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                        </svg>
+                    </div>
+                    <span class="text-xl font-bold gradient-text">RoomieMatch</span>
+                </a>
+                
+                <!-- Desktop Navigation Links -->
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="{{ url_for('browse_roommates') }}" class="text-gray-600 hover:text-primary-600 font-medium transition-colors">
+                        Find Roommates
+                    </a>
+                    <a href="{{ url_for('browse_listings') }}" class="text-gray-600 hover:text-primary-600 font-medium transition-colors">
+                        Browse Listings
+                    </a>
+                    {% if current_user %}
+                        <a href="{{ url_for('post_listing') }}" class="text-gray-600 hover:text-primary-600 font-medium transition-colors">
+                            Post Listing
+                        </a>
+                    {% endif %}
+                </div>
+                
+                <!-- Auth Buttons / User Menu -->
+                <div class="hidden md:flex items-center space-x-4">
+                    {% if current_user %}
+                        <a href="{{ url_for('dashboard') }}" class="text-gray-600 hover:text-primary-600 font-medium transition-colors">
+                            Dashboard
+                        </a>
+                        <div class="relative group">
+                            <button class="flex items-center space-x-2 text-gray-700 hover:text-primary-600">
+                                <div class="w-9 h-9 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white font-semibold">
+                                    {{ current_user.name[0].upper() }}
+                                </div>
+                                <span class="font-medium">{{ current_user.name.split()[0] }}</span>
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </button>
+                            <div class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 border border-gray-100">
+                                <a href="{{ url_for('profile') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-50">
+                                    My Profile
+                                </a>
+                                <a href="{{ url_for('dashboard') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-50">
+                                    Dashboard
+                                </a>
+                                <hr class="my-2 border-gray-100">
+                                <a href="{{ url_for('logout') }}" class="block px-4 py-2 text-red-600 hover:bg-red-50">
+                                    Log Out
+                                </a>
+                            </div>
+                        </div>
+                    {% else %}
+                        <a href="{{ url_for('login') }}" class="text-gray-600 hover:text-primary-600 font-medium transition-colors">
+                            Log In
+                        </a>
+                        <a href="{{ url_for('register') }}" class="bg-gradient-to-r from-primary-500 to-primary-600 text-white px-5 py-2.5 rounded-xl font-medium hover:from-primary-600 hover:to-primary-700 transition-all shadow-md hover:shadow-lg">
+                            Sign Up
+                        </a>
+                    {% endif %}
+                </div>
+                
+                <!-- Mobile Menu Button -->
+                <button id="mobile-menu-btn" class="md:hidden p-2 rounded-lg text-gray-600 hover:bg-gray-100">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-100 pb-4">
+            <div class="px-4 pt-2 space-y-2">
+                <a href="{{ url_for('browse_roommates') }}" class="block px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
+                    Find Roommates
+                </a>
+                <a href="{{ url_for('browse_listings') }}" class="block px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
+                    Browse Listings
+                </a>
+                {% if current_user %}
+                    <a href="{{ url_for('post_listing') }}" class="block px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
+                        Post Listing
+                    </a>
+                    <a href="{{ url_for('dashboard') }}" class="block px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
+                        Dashboard
+                    </a>
+                    <a href="{{ url_for('profile') }}" class="block px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
+                        My Profile
+                    </a>
+                    <a href="{{ url_for('logout') }}" class="block px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg">
+                        Log Out
+                    </a>
+                {% else %}
+                    <a href="{{ url_for('login') }}" class="block px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
+                        Log In
+                    </a>
+                    <a href="{{ url_for('register') }}" class="block px-4 py-3 bg-primary-500 text-white rounded-lg text-center font-medium">
+                        Sign Up
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+    
+    <!-- ============================================== -->
+    <!-- FLASH MESSAGES -->
+    <!-- ============================================== -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
+                {% for category, message in messages %}
+                    <div class="mb-3 p-4 rounded-xl flex items-center justify-between fade-in
+                        {% if category == 'error' %}bg-red-50 text-red-800 border border-red-200
+                        {% elif category == 'success' %}bg-green-50 text-green-800 border border-green-200
+                        {% elif category == 'warning' %}bg-yellow-50 text-yellow-800 border border-yellow-200
+                        {% else %}bg-blue-50 text-blue-800 border border-blue-200{% endif %}">
+                        <div class="flex items-center">
+                            {% if category == 'error' %}
+                                <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+                                </svg>
+                            {% elif category == 'success' %}
+                                <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                </svg>
+                            {% else %}
+                                <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                                </svg>
+                            {% endif %}
+                            {{ message }}
+                        </div>
+                        <button onclick="this.parentElement.remove()" class="text-current opacity-70 hover:opacity-100">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+    
+    <!-- ============================================== -->
+    <!-- MAIN CONTENT -->
+    <!-- ============================================== -->
+    <main class="flex-grow">
+        {% block content %}{% endblock %}
+    </main>
+    
+    <!-- ============================================== -->
+    <!-- FOOTER -->
+    <!-- ============================================== -->
+    <footer class="bg-gray-900 text-gray-300 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                
+                <!-- Brand -->
+                <div class="col-span-1 md:col-span-2">
+                    <div class="flex items-center space-x-2 mb-4">
+                        <div class="w-10 h-10 bg-gradient-to-br from-primary-500 to-accent-500 rounded-xl flex items-center justify-center">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                            </svg>
+                        </div>
+                        <span class="text-xl font-bold text-white">RoomieMatch</span>
+                    </div>
+                    <p class="text-gray-400 max-w-md">
+                        Find your perfect roommate or discover your next home. Our smart matching system helps you connect with compatible people.
+                    </p>
+                </div>
+                
+                <!-- Quick Links -->
+                <div>
+                    <h3 class="text-white font-semibold mb-4">Quick Links</h3>
+                    <ul class="space-y-2">
+                        <li><a href="{{ url_for('browse_roommates') }}" class="hover:text-white transition-colors">Find Roommates</a></li>
+                        <li><a href="{{ url_for('browse_listings') }}" class="hover:text-white transition-colors">Browse Listings</a></li>
+                        {% if current_user %}
+                            <li><a href="{{ url_for('post_listing') }}" class="hover:text-white transition-colors">Post a Listing</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+                
+                <!-- Account -->
+                <div>
+                    <h3 class="text-white font-semibold mb-4">Account</h3>
+                    <ul class="space-y-2">
+                        {% if current_user %}
+                            <li><a href="{{ url_for('dashboard') }}" class="hover:text-white transition-colors">Dashboard</a></li>
+                            <li><a href="{{ url_for('profile') }}" class="hover:text-white transition-colors">My Profile</a></li>
+                            <li><a href="{{ url_for('logout') }}" class="hover:text-white transition-colors">Log Out</a></li>
+                        {% else %}
+                            <li><a href="{{ url_for('login') }}" class="hover:text-white transition-colors">Log In</a></li>
+                            <li><a href="{{ url_for('register') }}" class="hover:text-white transition-colors">Sign Up</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+            
+            <hr class="border-gray-800 my-8">
+            
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <p class="text-gray-500 text-sm">
+                    &copy; 2024 RoomieMatch. Final Year Project.
+                </p>
+                <p class="text-gray-500 text-sm mt-2 md:mt-0">
+                    Built with Flask & TailwindCSS
+                </p>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- ============================================== -->
+    <!-- JAVASCRIPT -->
+    <!-- ============================================== -->
+    <script>
+        // Mobile menu toggle
+        document.getElementById('mobile-menu-btn').addEventListener('click', function() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        });
+        
+        // Auto-hide flash messages after 5 seconds
+        setTimeout(function() {
+            const alerts = document.querySelectorAll('.fade-in');
+            alerts.forEach(function(alert) {
+                alert.style.opacity = '0';
+                alert.style.transition = 'opacity 0.5s';
+                setTimeout(function() {
+                    alert.remove();
+                }, 500);
+            });
+        }, 5000);
+    </script>
+    
+    {% block scripts %}{% endblock %}
+</body>
+</html>
